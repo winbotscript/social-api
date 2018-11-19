@@ -1,5 +1,5 @@
 <?php
-
+namespace Servdebt\Social;
 use Carbon\Carbon;
 
 class TwitterTL extends TL
