@@ -1,5 +1,5 @@
 <?php
-
+namespace Servdebt\Social;
 class Item
 {
 	const SOURCE_TWITTER   = 1;
