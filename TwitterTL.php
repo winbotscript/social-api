@@ -61,7 +61,7 @@ class TwitterTL extends TL
 		$parsedMedia->variants = [];
 
 		if ($parsedMedia->type === Media::TYPE_IMAGE) {
-			$parsedVariant           = new stdClass();
+			$parsedVariant           = new \stdClass();
 			$parsedVariant->width    = $media->sizes->large->w;
 			$parsedVariant->height   = $media->sizes->large->h;
 			$parsedVariant->url      = $parsedMedia->url;
@@ -70,7 +70,7 @@ class TwitterTL extends TL
 
 		if ($parsedMedia->type === Media::TYPE_VIDEO || $parsedMedia->type === Media::TYPE_GIF) {
 			foreach ($media->video_info->variants as $variant) {
-				$parsedVariant           = new stdClass();
+				$parsedVariant           = new \stdClass();
 				$parsedVariant->width    = $media->sizes->large->w;
 				$parsedVariant->height   = $media->sizes->large->h;
 				$parsedVariant->url      = $variant->url;
