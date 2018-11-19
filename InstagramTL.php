@@ -1,5 +1,5 @@
 <?php
-
+namespace Servdebt\Social;
 use Carbon\Carbon;
 
 class InstagramTL extends TL
