@@ -1,5 +1,5 @@
 <?php
-
+namespace Servdebt\Social;
 class TL
 {
 
