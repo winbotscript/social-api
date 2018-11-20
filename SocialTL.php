@@ -17,7 +17,7 @@ class SocialTL extends TL
 
 	private $shortestTL;
 
-	public function __construct(int $fetchItemLimit = 10)
+	public function __construct(int $fetchItemLimit = 8)
 	{
 		$this->fetchLimit = $fetchItemLimit;
 		parent::__construct();

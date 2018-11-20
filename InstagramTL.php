@@ -12,13 +12,12 @@ class InstagramTL extends TL
 		2 => Media::TYPE_VIDEO,
 	];
 
-	public function __construct($sourceName, $data, ?int $cursor = null)
+	public function __construct($sourceName, $data, ?string $cursor = null)
 	{
 
 		parent::__construct();
 
 		$instagramTimeline = json_decode((string)$data->httpResponse->getBody());
-
 		foreach ($instagramTimeline->feed_items as $item) {
 
 			// Exclude anything that isn't a post - stories, suggested_users, netego etc.
@@ -36,9 +35,14 @@ class InstagramTL extends TL
 			$ii->author->picture = $item->user->profile_pic_url;
 			$ii->timestamp       = Carbon::parse($item->taken_at)->timestamp;
 
-			$ii->interactions->user->liked    = $item->has_liked;
-			$ii->interactions->alien->likes   = $item->like_count;
-			$ii->interactions->alien->replies = $item->comment_count;
+			if (isset($item->has_liked))
+				$ii->interactions->user->liked = $item->has_liked;
+
+			if (isset($item->like_count))
+				$ii->interactions->alien->likes = $item->like_count;
+
+			if (isset($item->comment_count))
+				$ii->interactions->alien->replies = $item->comment_count;
 
 			if (isset($item->caption->text))
 				$ii->text = $item->caption->text;
@@ -90,6 +94,29 @@ class InstagramTL extends TL
 
 		return $media;
 
+
+	}
+
+	public function push(InstagramTL $timeline): void
+	{
+		$this->items = \array_merge($this->items, $timeline->getItems());
+		$this->sort();
+		$this->calculateTimes();
+		$this->cursors->next = $timeline->getCursors()->next;
+	}
+
+	public function pushMultiple(array $timelines): void
+	{
+
+		foreach ($timelines as $timeline) {
+			if ($timeline instanceof InstagramTL) {
+				$this->items = \array_merge($this->items, $timeline->getItems());
+			}
+		}
+
+		$this->sort();
+		$this->calculateTimes();
+		$this->cursors->next = end($timelines)->getCursors()->previous;
 
 	}
 

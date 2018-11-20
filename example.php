@@ -92,9 +92,29 @@ $sg->loadNetwork("instagram", function () {
 
 $sg->loadQuery("instagram", function ($name, Instagram $connection, $cursor, int $fetchLimit) {
 
-	$rawTimeline = $connection->timeline->getTimelineFeed($cursor);
+	$coldTimeline = $connection->timeline->getTimelineFeed($cursor);
+	$coldTimeline = new InstagramTL($name, $coldTimeline);
 
-	return new InstagramTL($name, $rawTimeline);
+	if ($fetchLimit > 8) {
+		$rawTimelines = [];
+		$nextCursor   = $coldTimeline->getCursors()->next;
+		$apiCalls     = ceil(($fetchLimit - 8) / 13);
+		$apiCalls     = $apiCalls < 1 ? 1 : $apiCalls;
+		if ($coldTimeline->getCursors()->previous !== null)
+			$apiCalls++;
+
+		for ($i = 0; $i < $apiCalls; $i++) {
+			$warmTimeline   = $connection->timeline->getTimelineFeed($nextCursor);
+			$warmTimeline   = new InstagramTL($name, $warmTimeline, $nextCursor);
+			$nextCursor     = $warmTimeline->getCursors()->next;
+			$rawTimelines[] = $warmTimeline;
+		}
+
+		$coldTimeline->pushMultiple($rawTimelines);
+
+	}
+
+	return $coldTimeline;
 
 });
 
