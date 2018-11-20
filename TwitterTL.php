@@ -1,5 +1,7 @@
 <?php
+
 namespace Servdebt\Social;
+
 use Carbon\Carbon;
 
 class TwitterTL extends TL
@@ -11,23 +13,26 @@ class TwitterTL extends TL
 		"animated_gif" => Media::TYPE_GIF
 	];
 
-	public function __construct(array $twitterTimeline, ?int $cursor = null)
+	public function __construct($sourceName, array $twitterTimeline, ?int $cursor = null)
 	{
 
 		parent::__construct();
 
 		foreach ($twitterTimeline as $status) {
 
-			$tweet                       = new Item();
-			$tweet->source               = Item::SOURCE_TWITTER;
-			$tweet->id                   = $status->id;
-			$tweet->url                  = "https://twitter.com/{$status->user->screen_name}/status/{$status->id}/";
-			$tweet->author->name         = $status->user->name;
-			$tweet->author->user         = $status->user->screen_name;
-			$tweet->timestamp            = Carbon::parse($status->created_at)->timestamp;
-			$tweet->text                 = $status->full_text;
-			$tweet->interactions->likes  = $status->favorite_count;
-			$tweet->interactions->shares = $status->retweet_count;
+			$tweet               = new Item();
+			$tweet->source       = $sourceName;
+			$tweet->id           = $status->id;
+			$tweet->url          = "https://twitter.com/{$status->user->screen_name}/status/{$status->id}/";
+			$tweet->author->name = $status->user->name;
+			$tweet->author->user = $status->user->screen_name;
+			$tweet->timestamp    = Carbon::parse($status->created_at)->timestamp;
+			$tweet->text         = $status->full_text;
+
+			$tweet->interactions->user->liked   = (bool)$status->favorited;
+			$tweet->interactions->user->shared  = (bool)$status->retweeted;
+			$tweet->interactions->alien->likes  = $status->favorite_count;
+			$tweet->interactions->alien->shares = $status->retweet_count;
 
 			// Parse media
 			if (isset($status->extended_entities)) {

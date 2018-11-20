@@ -1,5 +1,7 @@
 <?php
+
 namespace Servdebt\Social;
+
 class TL
 {
 
@@ -13,7 +15,7 @@ class TL
 		$this->time        = new \stdClass();
 		$this->time->start = $this->time->end = $this->time->delta = null;
 
-		$this->cursors = new \stdClass();
+		$this->cursors           = new \stdClass();
 		$this->cursors->previous = $this->cursors->next = null;
 
 	}

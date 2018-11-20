@@ -1,5 +1,7 @@
 <?php
+
 namespace Servdebt\Social;
+
 use Carbon\Carbon;
 
 class InstagramTL extends TL
@@ -10,7 +12,7 @@ class InstagramTL extends TL
 		2 => Media::TYPE_VIDEO,
 	];
 
-	public function __construct($data, ?int $cursor = null)
+	public function __construct($sourceName, $data, ?int $cursor = null)
 	{
 
 		parent::__construct();
@@ -25,15 +27,17 @@ class InstagramTL extends TL
 
 			$item = $item->media_or_ad;
 
-			$ii                        = new Item();
-			$ii->id                    = $item->id;
-			$ii->source                = Item::SOURCE_INSTAGRAM;
-			$ii->url                   = "https://instagram.com/p/{$item->code}/";
-			$ii->author->name          = $item->user->full_name;
-			$ii->author->user          = $item->user->username;
-			$ii->timestamp             = Carbon::parse($item->taken_at)->timestamp;
-			$ii->interactions->likes   = $item->like_count;
-			$ii->interactions->replies = $item->comment_count;
+			$ii               = new Item();
+			$ii->id           = $item->id;
+			$ii->source       = $sourceName;
+			$ii->url          = "https://instagram.com/p/{$item->code}/";
+			$ii->author->name = $item->user->full_name;
+			$ii->author->user = $item->user->username;
+			$ii->timestamp    = Carbon::parse($item->taken_at)->timestamp;
+
+			$ii->interactions->user->liked    = $item->has_liked;
+			$ii->interactions->alien->likes   = $item->like_count;
+			$ii->interactions->alien->replies = $item->comment_count;
 
 			if (isset($item->caption->text))
 				$ii->text = $item->caption->text;

@@ -1,11 +1,9 @@
 <?php
+
 namespace Servdebt\Social;
+
 class Item
 {
-	const SOURCE_TWITTER   = 1;
-	const SOURCE_INSTAGRAM = 2;
-	const SOURCE_FEEDLY    = 3;
-
 	public $id;
 	public $source;
 	public $url;
@@ -19,11 +17,13 @@ class Item
 	{
 
 		$this->author       = new \stdClass();
-		$this->author->name = null;
-		$this->author->user = null;
+		$this->author->name = $this->author->user = null;
 
-		$this->interactions        = new \stdClass();
-		$this->interactions->likes = $this->interactions->shares = $this->interactions->replies = null;
+		$this->interactions               = new \stdClass();
+		$this->interactions->user         = new \stdClass();
+		$this->interactions->alien        = new \stdClass();
+		$this->interactions->user->liked  = $this->interactions->user->shared = false;
+		$this->interactions->alien->likes = $this->interactions->alien->shares = $this->interactions->alien->replies = null;
 	}
 
 	public function pushMedia(Media $media)

@@ -1,12 +1,15 @@
 <?php
+
 namespace Servdebt\Social;
+
 class SocialTL extends TL
 {
 
-	const API_REQUEST_SLEEP = 0;
+	const API_REQUEST_SLEEP = 1;
 
 	private $networks = [];
 	private $queries = [];
+	private $queriesReaction = [];
 	public $fetchLimit;
 
 	public $gatheredCursors = [];
@@ -14,28 +17,33 @@ class SocialTL extends TL
 
 	private $shortestTL;
 
-	public function __construct($fetchItemLimit = 10)
+	public function __construct(int $fetchItemLimit = 10)
 	{
 		$this->fetchLimit = $fetchItemLimit;
 		parent::__construct();
 	}
 
-	public function loadNetwork($name, callable $network)
+	public function loadNetwork(string $name, callable $network): void
 	{
 		$this->networks[$name] = $network();
 	}
 
-	public function loadQuery($name, callable $query)
+	public function loadQuery(string $name, callable $query): void
 	{
 		$this->queries[$name] = $query;
 	}
 
-	public function runQuery($name, $moveCursor = true)
+	public function loadReaction(string $name, callable $queryReaction): void
+	{
+		$this->queriesReaction[$name] = $queryReaction;
+	}
+
+	public function runQuery(string $name, bool $moveCursor = true): void
 	{
 		if (!isset($this->gatheredCursors[$name]))
 			$this->gatheredCursors[$name] = null;
 
-		$timeline = $this->queries[$name]($this->networks[$name], $this->gatheredCursors[$name], $this->fetchLimit);
+		$timeline = $this->queries[$name]($name, $this->networks[$name], $this->gatheredCursors[$name], $this->fetchLimit);
 		if ($moveCursor)
 			$this->gatheredCursors[$name] = $timeline->cursors->next;
 
@@ -44,7 +52,7 @@ class SocialTL extends TL
 		sleep(self::API_REQUEST_SLEEP);
 	}
 
-	public function fetch($itemMin = 4)
+	public function fetch(int $itemMin = 4): void
 	{
 		foreach ($this->networks as $name => $connection)
 			$this->runQuery($name);
@@ -75,6 +83,11 @@ class SocialTL extends TL
 		$this->sort();
 		$this->calculateTimes();
 
+	}
+
+	public function react($name, $mediaId, bool $value = true): void
+	{
+		$this->queriesReaction[$name]($name, $this->networks[$name], $mediaId, $value);
 	}
 
 }

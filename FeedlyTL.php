@@ -1,11 +1,11 @@
 <?php
+
 namespace Servdebt\Social;
-use Carbon\Carbon;
 
 class FeedlyTL extends TL
 {
 
-	public function __construct(\stdClass $data, ?int $cursor = null)
+	public function __construct($sourceName, \stdClass $data, ?int $cursor = null)
 	{
 
 		parent::__construct();
@@ -13,7 +13,7 @@ class FeedlyTL extends TL
 		foreach ($data->items as $item) {
 
 			$entry               = new Item();
-			$entry->source       = Item::SOURCE_FEEDLY;
+			$entry->source       = $sourceName;
 			$entry->id           = $item->id;
 			$entry->author->name = $item->origin->title;
 			$entry->author->user = $item->origin->htmlUrl;

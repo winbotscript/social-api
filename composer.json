@@ -13,6 +13,10 @@
 	{
 	  "name": "Tadeu Bento",
 	  "email": "tadeu.bento@servdebt.pt"
+	},
+	{
+	  "name": "Nuno Chaves",
+	  "email": "nuno.chaves@servdebt.pt"
 	}
   ],
   "minimum-stability": "dev",
