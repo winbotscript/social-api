@@ -82,6 +82,7 @@ $sg->loadQuery("feed", function ($name, \stdClass $connection, $cursor, int $fet
 
 $sg->loadNetwork("instagram", function () {
 
+	Instagram::$allowDangerousWebUsageAtMyOwnRisk = true;
 	$connection = new Instagram(false, false);
 	$connection->login("...", "...");
 

@@ -17,7 +17,7 @@ class Item
 	{
 
 		$this->author       = new \stdClass();
-		$this->author->name = $this->author->user = null;
+		$this->author->name = $this->author->user = $this->author->picture = null;
 
 		$this->interactions               = new \stdClass();
 		$this->interactions->user         = new \stdClass();

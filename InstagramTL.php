@@ -27,13 +27,14 @@ class InstagramTL extends TL
 
 			$item = $item->media_or_ad;
 
-			$ii               = new Item();
-			$ii->id           = $item->id;
-			$ii->source       = $sourceName;
-			$ii->url          = "https://instagram.com/p/{$item->code}/";
-			$ii->author->name = $item->user->full_name;
-			$ii->author->user = $item->user->username;
-			$ii->timestamp    = Carbon::parse($item->taken_at)->timestamp;
+			$ii                  = new Item();
+			$ii->id              = $item->id;
+			$ii->source          = $sourceName;
+			$ii->url             = "https://instagram.com/p/{$item->code}/";
+			$ii->author->name    = $item->user->full_name;
+			$ii->author->user    = $item->user->username;
+			$ii->author->picture = $item->user->profile_pic_url;
+			$ii->timestamp       = Carbon::parse($item->taken_at)->timestamp;
 
 			$ii->interactions->user->liked    = $item->has_liked;
 			$ii->interactions->alien->likes   = $item->like_count;

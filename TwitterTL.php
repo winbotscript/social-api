@@ -20,14 +20,15 @@ class TwitterTL extends TL
 
 		foreach ($twitterTimeline as $status) {
 
-			$tweet               = new Item();
-			$tweet->source       = $sourceName;
-			$tweet->id           = $status->id;
-			$tweet->url          = "https://twitter.com/{$status->user->screen_name}/status/{$status->id}/";
-			$tweet->author->name = $status->user->name;
-			$tweet->author->user = $status->user->screen_name;
-			$tweet->timestamp    = Carbon::parse($status->created_at)->timestamp;
-			$tweet->text         = $status->full_text;
+			$tweet                  = new Item();
+			$tweet->source          = $sourceName;
+			$tweet->id              = $status->id;
+			$tweet->url             = "https://twitter.com/{$status->user->screen_name}/status/{$status->id}/";
+			$tweet->author->name    = $status->user->name;
+			$tweet->author->user    = $status->user->screen_name;
+			$tweet->author->picture = $status->user->profile_image_url_https;
+			$tweet->timestamp       = Carbon::parse($status->created_at)->timestamp;
+			$tweet->text            = $status->full_text;
 
 			$tweet->interactions->user->liked   = (bool)$status->favorited;
 			$tweet->interactions->user->shared  = (bool)$status->retweeted;
