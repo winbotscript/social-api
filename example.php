@@ -34,10 +34,7 @@ $sg->loadQuery("twitter", function ($name, TwitterOAuth $connection, ?int $curso
 });
 
 $sg->loadReaction("twitter", function ($name, TwitterOAuth $connection, int $mediaId, bool $type = true) {
-	if ($type)
-		$connection->post("favorites/create", ["id" => $mediaId]);
-	else
-		$connection->post("favorites/destroy", ["id" => $mediaId]);
+	$connection->post("favorites/" . ($type ? "create" : "destroy"), ["id" => $mediaId]);
 });
 
 $sg->loadNetwork("feed", function () {
@@ -92,37 +89,34 @@ $sg->loadNetwork("instagram", function () {
 
 $sg->loadQuery("instagram", function ($name, Instagram $connection, $cursor, int $fetchLimit) {
 
-	$coldTimeline = $connection->timeline->getTimelineFeed($cursor);
-	$coldTimeline = new InstagramTL($name, $coldTimeline);
+	$coldTl = $connection->timeline->getTimelineFeed($cursor);
+	$coldTl = new InstagramTL($name, $coldTl);
 
 	if ($fetchLimit > 8) {
-		$rawTimelines = [];
-		$nextCursor   = $coldTimeline->getCursors()->next;
-		$apiCalls     = ceil(($fetchLimit - 8) / 13);
-		$apiCalls     = $apiCalls < 1 ? 1 : $apiCalls;
-		if ($coldTimeline->getCursors()->previous !== null)
-			$apiCalls++;
+		$tls   = [];
+		$next  = $coldTl->getCursors()->next;
+		$calls = ceil(($fetchLimit - 8) / 13);
+		$calls = $calls < 1 ? 1 : $calls;
+		if ($coldTl->getCursors()->previous !== null)
+			$calls++;
 
-		for ($i = 0; $i < $apiCalls; $i++) {
-			$warmTimeline   = $connection->timeline->getTimelineFeed($nextCursor);
-			$warmTimeline   = new InstagramTL($name, $warmTimeline, $nextCursor);
-			$nextCursor     = $warmTimeline->getCursors()->next;
-			$rawTimelines[] = $warmTimeline;
+		for ($i = 0; $i < $calls; $i++) {
+			$warmTl = $connection->timeline->getTimelineFeed($next);
+			$warmTl = new InstagramTL($name, $warmTl, $next);
+			$next   = $warmTl->getCursors()->next;
+			$tls[]  = $warmTl;
 		}
 
-		$coldTimeline->pushMultiple($rawTimelines);
+		$coldTl->pushMultiple($tls);
 
 	}
 
-	return $coldTimeline;
+	return $coldTl;
 
 });
 
 $sg->loadReaction("instagram", function ($name, Instagram $connection, $mediaId, bool $type = true) {
-	if ($type)
-		$connection->media->like($mediaId, "feed_timeline");
-	else
-		$connection->media->unlike($mediaId, "feed_timeline");
+	$connection->media->{($type ? "like" : "unlike")}($mediaId, "feed_timeline");
 });
 
 $sg->gatheredCursors = [
