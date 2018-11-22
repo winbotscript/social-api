@@ -28,8 +28,12 @@ class FeedlyTL extends TL
 				$entry->url = $item->alternate[0]->href;
 
 			// Parse media
-			if (isset($item->visual) && $item->visual->url !== "none")
-				$entry->pushMedia($this->parseMedia($item->visual));
+			if (isset($item->visual) && $item->visual->url !== "none") {
+			    $m = $this->parseMedia($item->visual);
+			    if ($m !== false) {
+                    $entry->pushMedia($m);
+                }
+            }
 
 			$this->items[] = $entry;
 		}
@@ -39,11 +43,11 @@ class FeedlyTL extends TL
 
 		$this->cursors->previous = $cursor;
 		$this->cursors->next     = $data->continuation;
-
 	}
 
 	protected function parseMedia($media): Media
 	{
+        if (empty($media->width) || empty($media->height)) return false;
 
 		$parsedMedia        = new Media();
 		$parsedMedia->thumb = $media->url;
@@ -57,7 +61,6 @@ class FeedlyTL extends TL
 		];
 
 		return $parsedMedia;
-
 	}
 
 }
