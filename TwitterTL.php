@@ -2,8 +2,6 @@
 
 namespace Servdebt\Social;
 
-use Carbon\Carbon;
-
 class TwitterTL extends TL
 {
 
@@ -27,7 +25,7 @@ class TwitterTL extends TL
 			$tweet->author->name    = $status->user->name;
 			$tweet->author->user    = $status->user->screen_name;
 			$tweet->author->picture = $status->user->profile_image_url_https;
-			$tweet->timestamp       = Carbon::parse($status->created_at)->timestamp;
+			$tweet->timestamp       = strtotime($status->created_at);
 			$tweet->text            = $status->full_text;
 
 			$tweet->interactions->user->liked   = (bool)$status->favorited;
@@ -57,7 +55,7 @@ class TwitterTL extends TL
 
 	}
 
-	protected function parseMedia($media): Media
+	protected function parseMedia(\stdClass $media): Media
 	{
 
 		$parsedMedia           = new Media();

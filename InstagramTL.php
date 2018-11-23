@@ -2,8 +2,6 @@
 
 namespace Servdebt\Social;
 
-use Carbon\Carbon;
-
 class InstagramTL extends TL
 {
 
@@ -33,7 +31,7 @@ class InstagramTL extends TL
 			$ii->author->name    = $item->user->full_name;
 			$ii->author->user    = $item->user->username;
 			$ii->author->picture = $item->user->profile_pic_url;
-			$ii->timestamp       = Carbon::parse($item->taken_at)->timestamp;
+			$ii->timestamp       = $item->taken_at;
 
 			if (isset($item->has_liked))
 				$ii->interactions->user->liked = $item->has_liked;
@@ -72,7 +70,7 @@ class InstagramTL extends TL
 
 	}
 
-	protected function parseMedia($item): Media
+	protected function parseMedia(\stdClass $item): Media
 	{
 
 		$candidates = $item->image_versions2->candidates;

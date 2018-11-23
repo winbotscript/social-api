@@ -29,11 +29,10 @@ class FeedlyTL extends TL
 
 			// Parse media
 			if (isset($item->visual) && $item->visual->url !== "none") {
-			    $m = $this->parseMedia($item->visual);
-			    if ($m !== false) {
-                    $entry->pushMedia($m);
-                }
-            }
+				$m = $this->parseMedia($item->visual);
+				if ($m !== null)
+					$entry->pushMedia($m);
+			}
 
 			$this->items[] = $entry;
 		}
@@ -45,9 +44,10 @@ class FeedlyTL extends TL
 		$this->cursors->next     = $data->continuation;
 	}
 
-	protected function parseMedia($media): Media
+	protected function parseMedia(\stdClass $media): ?Media
 	{
-        if (empty($media->width) || empty($media->height)) return false;
+		if (empty($media->width) || empty($media->height))
+			return null;
 
 		$parsedMedia        = new Media();
 		$parsedMedia->thumb = $media->url;

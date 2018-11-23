@@ -19,14 +19,18 @@ class Item
 		$this->author       = new \stdClass();
 		$this->author->name = $this->author->user = $this->author->picture = null;
 
-		$this->interactions               = new \stdClass();
-		$this->interactions->user         = new \stdClass();
-		$this->interactions->alien        = new \stdClass();
-		$this->interactions->user->liked  = $this->interactions->user->shared = false;
-		$this->interactions->alien->likes = $this->interactions->alien->shares = $this->interactions->alien->replies = null;
+		$this->interactions                 = new \stdClass();
+		$this->interactions->user           = new \stdClass();
+		$this->interactions->alien          = new \stdClass();
+		$this->interactions->user->liked    = false;
+		$this->interactions->user->shared   = false;
+		$this->interactions->alien->likes   = null;
+		$this->interactions->alien->shares  = null;
+		$this->interactions->alien->replies = null;
+
 	}
 
-	public function pushMedia(Media $media)
+	public function pushMedia(Media $media): void
 	{
 		$this->media[] = $media;
 	}

@@ -3,7 +3,6 @@
 include "vendor/autoload.php";
 
 use Abraham\TwitterOAuth\TwitterOAuth;
-use Carbon\Carbon;
 use InstagramAPI\Instagram;
 use Servdebt\Social\{FeedlyTL, InstagramTL, SocialTL, TwitterTL};
 
@@ -139,8 +138,7 @@ foreach ($finalTL as $item) {
 	$debug[] = (object)[
 		"id"     => $item->id,
 		"source" => $item->source,
-		"date"   => Carbon::parse($item->timestamp)
-		                  ->format("d-m-Y H:i:s"),
+		"date"   => date("d-m-Y H:i:s", $item->timestamp),
 		"user"   => $item->author->name,
 	];
 
@@ -158,13 +156,12 @@ foreach ($finalTL as $item) {
 			print "X";
 	}
 
-	print " > " . Carbon::parse($item->timestamp)
-	                    ->format("d-m-Y H:i:s");
+	print " > " . date("d-m-Y H:i:s", $item->timestamp);
 	print " - " . $item->author->name . "\033[0m";
-	print PHP_EOL;
-	print " " . $item->url;
-	print PHP_EOL;
-	print " (" . $item->id . ")";
+	//		print PHP_EOL;
+	//		print " " . $item->url;
+	//		print PHP_EOL;
+	//		print " (" . $item->id . ")";
 	print PHP_EOL;
 
 }
