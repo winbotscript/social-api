@@ -59,17 +59,22 @@ class TwitterTL extends TL
 	{
 
 		$parsedMedia           = new Media();
-		$parsedMedia->thumb    = $media->media_url_https;
-		$parsedMedia->url      = $media->media_url_https;
 		$parsedMedia->type     = self::$mediaTypeMap[$media->type];
 		$parsedMedia->variants = [];
 
 		if ($parsedMedia->type === Media::TYPE_IMAGE) {
-			$parsedVariant           = new \stdClass();
-			$parsedVariant->width    = $media->sizes->large->w;
-			$parsedVariant->height   = $media->sizes->large->h;
-			$parsedVariant->url      = $parsedMedia->url;
-			$parsedMedia->variants[] = $parsedVariant;
+			foreach ($media->sizes as $size => $values) {
+				$parsedVariant           = new \stdClass();
+				$parsedVariant->width    = $values->w;
+				$parsedVariant->height   = $values->h;
+				$parsedVariant->url      = $media->media_url_https . ":" . $size;
+				$parsedMedia->variants[] = $parsedVariant;
+			}
+
+			$this->sortMediaVariants($parsedMedia->variants);
+
+			$parsedMedia->thumbIdx = \count($parsedMedia->variants) - 2;
+			$parsedMedia->largeIdx = 0;
 		}
 
 		if ($parsedMedia->type === Media::TYPE_VIDEO || $parsedMedia->type === Media::TYPE_GIF) {
@@ -81,7 +86,14 @@ class TwitterTL extends TL
 				$parsedMedia->variants[] = $parsedVariant;
 			}
 
-			$parsedMedia->url = $parsedMedia->variants[0]->url;
+			$thumbVariant            = new \stdClass();
+			$thumbVariant->width     = $media->sizes->small->w;
+			$thumbVariant->height    = $media->sizes->small->h;
+			$thumbVariant->url       = $media->media_url_https;
+			$parsedMedia->variants[] = $thumbVariant;
+
+			$parsedMedia->thumbIdx = \count($parsedMedia->variants) - 1;
+			$parsedMedia->largeIdx = 0;
 		}
 
 		return $parsedMedia;

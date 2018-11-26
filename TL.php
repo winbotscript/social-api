@@ -30,6 +30,11 @@ class TL
 		});
 	}
 
+	public function sortMediaVariants(&$variants)
+	{
+		array_multisort(array_column($variants, "width"), SORT_DESC, array_column($variants, "height"), SORT_DESC, $variants);
+	}
+
 	public function calculateTimes(): void
 	{
 		$this->time->start = $this->items[0]->timestamp;

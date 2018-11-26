@@ -8,8 +8,8 @@ class Media
 	const TYPE_VIDEO = 2;
 	const TYPE_GIF   = 3;
 
-	public $thumb;
-	public $url;
+	public $thumbIdx;
+	public $largeIdx;
 	public $type = self::TYPE_IMAGE;
 	public $variants = [];
 }

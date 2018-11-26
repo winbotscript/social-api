@@ -49,16 +49,17 @@ class FeedlyTL extends TL
 		if (empty($media->width) || empty($media->height))
 			return null;
 
-		$parsedMedia        = new Media();
-		$parsedMedia->thumb = $media->url;
-		$parsedMedia->url   = $media->url;
-		$parsedMedia->type  = Media::TYPE_IMAGE;
+		$parsedMedia       = new Media();
+		$parsedMedia->type = Media::TYPE_IMAGE;
 
 		$parsedMedia->variants[] = (object)[
 			"width"  => $media->width,
 			"height" => $media->height,
 			"url"    => $media->url
 		];
+
+		$parsedMedia->thumbIdx = 0;
+		$parsedMedia->largeIdx = 0;
 
 		return $parsedMedia;
 	}

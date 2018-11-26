@@ -74,12 +74,9 @@ class InstagramTL extends TL
 	{
 
 		$candidates = $item->image_versions2->candidates;
-		$thumb      = end($candidates); // Thumb - last item on the candidates list
 
-		$media        = new Media();
-		$media->thumb = $candidates[0]->url;
-		$media->url   = $thumb->url;
-		$media->type  = self::$mediaTypeMap[$item->media_type];
+		$media       = new Media();
+		$media->type = self::$mediaTypeMap[$item->media_type];
 
 		$media->variants = [];
 		foreach ($candidates as $variant) {
@@ -90,8 +87,12 @@ class InstagramTL extends TL
 			$media->variants[]     = $parsedVariant;
 		}
 
-		return $media;
+		$this->sortMediaVariants($media->variants);
 
+		$media->thumbIdx = count($media->variants) - 1;
+		$media->largeIdx = 0;
+
+		return $media;
 
 	}
 
