@@ -58,45 +58,28 @@ class TwitterTL extends TL
 	protected function parseMedia(\stdClass $media): Media
 	{
 
-		$parsedMedia           = new Media();
-		$parsedMedia->type     = self::$mediaTypeMap[$media->type];
-		$parsedMedia->variants = [];
+		$parsed       = new Media();
+		$parsed->type = self::$mediaTypeMap[$media->type];
+		$variants     = &$parsed->variants;
 
-		if ($parsedMedia->type === Media::TYPE_IMAGE) {
-			foreach ($media->sizes as $size => $values) {
-				$parsedVariant           = new \stdClass();
-				$parsedVariant->width    = $values->w;
-				$parsedVariant->height   = $values->h;
-				$parsedVariant->url      = $media->media_url_https . ":" . $size;
-				$parsedMedia->variants[] = $parsedVariant;
-			}
+		$variants->thumb->width  = $media->sizes->small->w;
+		$variants->thumb->height = $media->sizes->small->h;
+		$variants->thumb->url    = $media->media_url_https . ":small";
 
-			$this->sortMediaVariants($parsedMedia->variants);
+		$variants->medium->width  = $media->sizes->medium->w;
+		$variants->medium->height = $media->sizes->medium->h;
+		$variants->medium->url    = $media->media_url_https . ":medium";
 
-			$parsedMedia->thumbIdx = \count($parsedMedia->variants) - 2;
-			$parsedMedia->largeIdx = 0;
+		$variants->large->width  = $media->sizes->large->w;
+		$variants->large->height = $media->sizes->large->h;
+		$variants->large->url    = $media->media_url_https . ":large";
+
+		if ($parsed->type === Media::TYPE_VIDEO || $parsed->type === Media::TYPE_GIF) {
+			$variants->medium->url = $media->video_info->variants[0]->url;
+			$variants->large->url = $media->video_info->variants[0]->url;
 		}
 
-		if ($parsedMedia->type === Media::TYPE_VIDEO || $parsedMedia->type === Media::TYPE_GIF) {
-			foreach ($media->video_info->variants as $variant) {
-				$parsedVariant           = new \stdClass();
-				$parsedVariant->width    = $media->sizes->large->w;
-				$parsedVariant->height   = $media->sizes->large->h;
-				$parsedVariant->url      = $variant->url;
-				$parsedMedia->variants[] = $parsedVariant;
-			}
-
-			$thumbVariant            = new \stdClass();
-			$thumbVariant->width     = $media->sizes->small->w;
-			$thumbVariant->height    = $media->sizes->small->h;
-			$thumbVariant->url       = $media->media_url_https;
-			$parsedMedia->variants[] = $thumbVariant;
-
-			$parsedMedia->thumbIdx = \count($parsedMedia->variants) - 1;
-			$parsedMedia->largeIdx = 0;
-		}
-
-		return $parsedMedia;
+		return $parsed;
 
 	}
 

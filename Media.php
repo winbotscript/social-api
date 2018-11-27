@@ -8,8 +8,14 @@ class Media
 	const TYPE_VIDEO = 2;
 	const TYPE_GIF   = 3;
 
-	public $thumbIdx;
-	public $largeIdx;
 	public $type = self::TYPE_IMAGE;
-	public $variants = [];
+	public $variants;
+
+	public function __construct()
+	{
+		$this->variants         = new \stdClass();
+		$this->variants->thumb  = new MediaVariant();
+		$this->variants->medium = new MediaVariant();
+		$this->variants->large  = new MediaVariant();
+	}
 }

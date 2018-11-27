@@ -70,30 +70,40 @@ class InstagramTL extends TL
 
 	}
 
-	protected function parseMedia(\stdClass $item): Media
+	protected function parseMedia(\stdClass $media): Media
 	{
 
-		$candidates = $item->image_versions2->candidates;
+		$mediaImgs = $media->image_versions2->candidates;
+		array_multisort(array_column($mediaImgs, "width"), SORT_DESC, array_column($mediaImgs, "height"), SORT_DESC, $mediaImgs);
 
-		$media       = new Media();
-		$media->type = self::$mediaTypeMap[$item->media_type];
+		$parsed       = new Media();
+		$parsed->type = self::$mediaTypeMap[$media->media_type];
+		$variants     = &$parsed->variants;
 
-		$media->variants = [];
-		foreach ($candidates as $variant) {
-			$parsedVariant         = new \stdClass();
-			$parsedVariant->width  = $variant->width;
-			$parsedVariant->height = $variant->height;
-			$parsedVariant->url    = $variant->url;
-			$media->variants[]     = $parsedVariant;
+		$variants->thumb->width  = end($mediaImgs)->width;
+		$variants->thumb->height = end($mediaImgs)->height;
+		$variants->thumb->url    = end($mediaImgs)->url;
+
+		$variants->medium->width  = $mediaImgs[0]->width;
+		$variants->medium->height = $mediaImgs[0]->height;
+		$variants->medium->url    = $mediaImgs[0]->url;
+
+		$variants->large = clone $variants->medium;
+
+		if ($parsed->type === Media::TYPE_VIDEO || $parsed->type === Media::TYPE_GIF) {
+
+			usort($media->video_versions, function ($i1, $i2) {
+				return $i2->width <=> $i1->width;
+			});
+
+			$variants->medium->width  = $media->video_versions[0]->width;
+			$variants->medium->height = $media->video_versions[0]->height;
+			$variants->medium->url    = $media->video_versions[0]->url;
+
+			$variants->large = clone $variants->medium;
 		}
 
-		$this->sortMediaVariants($media->variants);
-
-		$media->thumbIdx = count($media->variants) - 1;
-		$media->largeIdx = 0;
-
-		return $media;
-
+		return $parsed;
 	}
 
 	public function push(InstagramTL $timeline): void
