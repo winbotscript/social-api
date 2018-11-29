@@ -57,6 +57,9 @@ class SocialTL extends TL
 		foreach ($this->networks as $name => $connection)
 			$this->runQuery($name);
 
+		if (empty($this->gatheredTimelines))
+			return;
+
 		// Min interval to set timeline baseline
 		$eligibleTimelines = array_filter($this->gatheredTimelines, function ($timeline) use ($itemMin) {
 			return (count($timeline->items) >= $itemMin);
