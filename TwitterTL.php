@@ -35,9 +35,16 @@ class TwitterTL extends TL
 
 			// Parse media
 			if (isset($status->extended_entities)) {
+
 				foreach ($status->extended_entities->media as $media) {
 					$media = $this->parseMedia($media);
 					$tweet->pushMedia($media);
+				}
+
+				// Remove media links from the tweet text
+				if (!empty($status->extended_entities->media)) {
+					$mediaLinks  = array_column($status->extended_entities->media, "url");
+					$tweet->text = str_replace($mediaLinks, "", $tweet->text);
 				}
 			}
 
@@ -76,7 +83,7 @@ class TwitterTL extends TL
 
 		if ($parsed->type === Media::TYPE_VIDEO || $parsed->type === Media::TYPE_GIF) {
 			$variants->medium->url = $media->video_info->variants[0]->url;
-			$variants->large->url = $media->video_info->variants[0]->url;
+			$variants->large->url  = $media->video_info->variants[0]->url;
 		}
 
 		return $parsed;
