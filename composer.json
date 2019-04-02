@@ -4,9 +4,11 @@
   "description": "Social API - Get all your social networks timelines in one call!",
   "require": {
 	"abraham/twitteroauth": "0.9.2",
-	"mgp25/instagram-php": "5.0.0",
-	"guzzlehttp/guzzle": "6.3.3",
 	"ext-json": "*"
+  },
+  "suggest": {
+	"mgp25/instagram-php": "In order to use InstagramTL.",
+	"guzzlehttp/guzzle": "HTTP client that makes it easy to send HTTP requests."
   },
   "authors": [
 	{
