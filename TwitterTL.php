@@ -13,8 +13,11 @@ class TwitterTL extends TL
 
     public function __construct($sourceName, array $twitterTimeline, ?int $cursor = null)
     {
-
         parent::__construct();
+        
+        if (empty($twitterTimeline)) {
+            return;
+        }
 
         foreach ($twitterTimeline as $status) {
 
